@@ -19,6 +19,10 @@ def solve(num_wizards, num_constraints, wizards, constraints):
     Output:
         An array of wizard names in the ordering your algorithm returns
     """
+    print(num_wizards)
+    print(num_constraints)
+    print(wizards)
+    print(constraints)
     return []
 
 """
