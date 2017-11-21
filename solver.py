@@ -1,4 +1,10 @@
 import argparse
+from itertools import permutations
+# import ortools
+# from ortools.constraint_solver import pywrapcp
+import random
+import copy
+import math
 
 """
 ======================================================================
@@ -19,11 +25,75 @@ def solve(num_wizards, num_constraints, wizards, constraints):
     Output:
         An array of wizard names in the ordering your algorithm returns
     """
-    print(num_wizards)
-    print(num_constraints)
-    print(wizards)
-    print(constraints)
-    return []
+
+    # print(num_wizards)
+    # print(num_constraints)
+    # print(wizards)
+    # print(constraints)
+    # node_set = set(s)
+    node_map = {k: v for v, k in enumerate(wizards)}
+
+
+    def cost(sol,num_constraints,constraints,output_ordering_map):
+        constraints_satisfied = 0
+        constraints_failed = []
+        for c in constraints:
+
+            m = output_ordering_map # Creating an alias for easy reference
+
+            wiz_a = m[c[0]]
+            wiz_b = m[c[1]]
+            wiz_mid = m[c[2]]
+
+            if (wiz_a < wiz_mid < wiz_b) or (wiz_b < wiz_mid < wiz_a):
+                constraints_failed.append(c)
+            else:
+                constraints_satisfied += 1
+        return len(constraints_failed)
+
+    def neighbors(sol):
+        wiz1 = random.randint(0,num_wizards-1)
+        wiz2 = random.randint(0,num_wizards-1)
+
+        new_sol = copy.copy(sol)
+        temp = new_sol[wiz1]
+        new_sol[wiz1] = new_sol[wiz2]
+        new_sol[wiz2] = temp
+
+        return new_sol
+
+    def acceptance_probability(old_cost,new_cost,T):
+        exponent = (old_cost - new_cost) / T
+        return math.exp(exponent)
+
+
+    def anneal(solution, num_constraints, constraints, output_ordering_map):
+        old_cost = cost(solution,num_constraints,constraints,output_ordering_map)
+        T = 1.0
+        T_min = 0.00001
+        alpha = 0.9
+        while T > T_min:
+            i = 1
+            while i <= 100:
+                new_solution = neighbors(solution)
+                new_cost = cost(new_solution,num_constraints,constraints,output_ordering_map)
+                ap = acceptance_probability(old_cost, new_cost, T)
+                if ap > random.random():
+                    solution = new_solution
+                    old_cost = new_cost
+                i += 1
+            T = T*alpha
+        return solution, old_cost
+
+    s = copy.copy(wizards)
+    random.shuffle(s)
+
+    ret = anneal(s,num_constraints,constraints, node_map)
+
+    return ret[0]
+
+
+
 
 """
 ======================================================================
@@ -60,3 +130,7 @@ if __name__=="__main__":
     num_wizards, num_constraints, wizards, constraints = read_input(args.input_file)
     solution = solve(num_wizards, num_constraints, wizards, constraints)
     write_output(args.output_file, solution)
+
+
+
+

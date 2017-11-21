@@ -126,26 +126,26 @@ def helper(num_constraints, cons,s):
 	return 1
 
 
-combs = permutations(vals,l)
-for c in combs:
+# combs = permutations(vals,l)
+# for c in combs:
 	
-	start_time = time.time()
-	k = helper(16,constraints,c)
-	elapsed_time = time.time() - start_time
-	if k != 0:
-		order = c
-	count += k
+# 	start_time = time.time()
+# 	k = helper(16,constraints,c)
+# 	elapsed_time = time.time() - start_time
+# 	if k != 0:
+# 		order = c
+# 	count += k
 
 
-print(count)
-s =""
+# print(count)
+# s =""
 
-print(len(vals))
-for i in vals:
-	s += i 
-	s += " "
-print(s)
-print(num_constraints)
-for i in constraints:
-	print("{0} {1} {2}".format(i[0],i[1],i[2]))
+# print(len(vals))
+# for i in vals:
+# 	s += i 
+# 	s += " "
+# print(s)
+# print(num_constraints)
+# for i in constraints:
+# 	print("{0} {1} {2}".format(i[0],i[1],i[2]))
 
