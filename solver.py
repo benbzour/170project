@@ -31,12 +31,13 @@ def solve(num_wizards, num_constraints, wizards, constraints):
     # print(wizards)
     # print(constraints)
     # node_set = set(wizards)
-    node_map = {k: v for v, k in enumerate(wizards)}
+    
 
 
-    def cost(sol,num_constraints,constraints,output_ordering_map):
+    def cost(sol,num_constraints,constraints):
         constraints_satisfied = 0
         constraints_failed = []
+        output_ordering_map = {k: v for v, k in enumerate(sol)}
         for c in constraints:
 
             m = output_ordering_map # Creating an alias for easy reference
@@ -49,7 +50,7 @@ def solve(num_wizards, num_constraints, wizards, constraints):
                 constraints_failed.append(c)
             else:
                 constraints_satisfied += 1
-        return len(constraints_failed)
+        return num_constraints - constraints_satisfied
 
     def neighbors(sol):
         wiz1 = random.randint(0,num_wizards-1)
@@ -67,18 +68,18 @@ def solve(num_wizards, num_constraints, wizards, constraints):
         return math.exp(exponent)
 
 
-    def anneal(solution, num_constraints, constraints, output_ordering_map):
-        old_cost = cost(solution,num_constraints,constraints,output_ordering_map)
+    def anneal(solution, num_constraints, constraints):
+        old_cost = cost(solution,num_constraints,constraints)
         T = 1.0
         T_min = 0.000001
-        alpha = 0.89
+        alpha = 0.95
         while T > T_min:
             i = 1
-            while i <= 200:
+            while i <= 1000:
                 new_solution = neighbors(solution)
-                new_cost = cost(new_solution,num_constraints,constraints,output_ordering_map)
-                if new_cost < 5:
-                    print(new_solution,new_cost)
+                new_cost = cost(new_solution,num_constraints,constraints)
+                if new_cost == 0:
+                    return new_solution,new_cost
                 ap = acceptance_probability(old_cost, new_cost, T)
                 if ap > random.random():
                     solution = new_solution
@@ -90,7 +91,7 @@ def solve(num_wizards, num_constraints, wizards, constraints):
     s = copy.copy(wizards)
     random.shuffle(s)
 
-    ret = anneal(s,num_constraints,constraints, node_map)
+    ret = anneal(s,num_constraints,constraints)
     print(ret)
     return ret[0]
 
