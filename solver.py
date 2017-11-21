@@ -30,7 +30,7 @@ def solve(num_wizards, num_constraints, wizards, constraints):
     # print(num_constraints)
     # print(wizards)
     # print(constraints)
-    # node_set = set(s)
+    # node_set = set(wizards)
     node_map = {k: v for v, k in enumerate(wizards)}
 
 
@@ -59,7 +59,7 @@ def solve(num_wizards, num_constraints, wizards, constraints):
         temp = new_sol[wiz1]
         new_sol[wiz1] = new_sol[wiz2]
         new_sol[wiz2] = temp
-
+        
         return new_sol
 
     def acceptance_probability(old_cost,new_cost,T):
@@ -70,13 +70,15 @@ def solve(num_wizards, num_constraints, wizards, constraints):
     def anneal(solution, num_constraints, constraints, output_ordering_map):
         old_cost = cost(solution,num_constraints,constraints,output_ordering_map)
         T = 1.0
-        T_min = 0.00001
-        alpha = 0.9
+        T_min = 0.000001
+        alpha = 0.89
         while T > T_min:
             i = 1
-            while i <= 100:
+            while i <= 200:
                 new_solution = neighbors(solution)
                 new_cost = cost(new_solution,num_constraints,constraints,output_ordering_map)
+                if new_cost < 5:
+                    print(new_solution,new_cost)
                 ap = acceptance_probability(old_cost, new_cost, T)
                 if ap > random.random():
                     solution = new_solution
@@ -89,7 +91,7 @@ def solve(num_wizards, num_constraints, wizards, constraints):
     random.shuffle(s)
 
     ret = anneal(s,num_constraints,constraints, node_map)
-
+    print(ret)
     return ret[0]
 
 
