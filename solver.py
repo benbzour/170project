@@ -65,17 +65,20 @@ def solve(num_wizards, num_constraints, wizards, constraints):
 
     def acceptance_probability(old_cost,new_cost,T):
         exponent = (old_cost - new_cost) / T
+        
         return math.exp(exponent)
 
 
     def anneal(solution, num_constraints, constraints):
+        old_cost = 0
+        new_cost = 0
         old_cost = cost(solution,num_constraints,constraints)
         T = 1.0
         T_min = 0.000001
-        alpha = 0.95
+        alpha = 0.98
         while T > T_min:
             i = 1
-            while i <= 1000:
+            while i <= 700:
                 new_solution = neighbors(solution)
                 new_cost = cost(new_solution,num_constraints,constraints)
                 if new_cost == 0:
@@ -90,9 +93,15 @@ def solve(num_wizards, num_constraints, wizards, constraints):
 
     s = copy.copy(wizards)
     random.shuffle(s)
-
     ret = anneal(s,num_constraints,constraints)
-    print(ret)
+    
+    # for i in range(10):
+    #     random.shuffle(s)
+    #     new_ret = anneal(s,num_constraints,constraints)
+    #     print(i)
+    #     if new_ret[1] < ret[1]:
+    #         ret = new_ret
+    print("constraints failed: {0}".format(ret[1]))
     return ret[0]
 
 
