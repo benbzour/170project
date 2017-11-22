@@ -63,12 +63,14 @@ i = 0
 
 for file in files20:
 	output_file = output_path + "output20_" + str(i) + ".out"
+	print( "output20_" + str(i))
 	print(processInput(file, output_file))
 	i += 1
 
 i = 0
 for file in files35:
 	output_file = output_path + "output35_" + str(i) + ".out"
+	print( "output35_" + str(i))
 	print(processInput(file, output_file))
 	i += 1
 
@@ -76,6 +78,7 @@ for file in files35:
 i = 0
 for file in files50:
 	output_file = output_path + "output50_" + str(i) + ".out"
+	print( "output50_" + str(i))
 	print(processInput(file, output_file))
 	i += 1
 
@@ -84,10 +87,6 @@ for file in files50:
 
 
 
-
-
-if __name__ == '__main__':
-    main(sys.argv[1:])
 
 
 
