@@ -108,7 +108,7 @@ def solve(num_wizards, num_constraints, wizards, constraints):
         if new_ret[1] < ret[1]:
             ret = new_ret
     print("constraints failed: {0}".format(ret[1]))
-    return ret[0], ret[1]
+    return ret[0]
 
 
 
