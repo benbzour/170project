@@ -3,46 +3,51 @@
 import glob
 
 def processInput(input_file, output_file):
-    fin = open(input_file, "r")
-    fout = open(output_file, "r")
+	fin = open(input_file, "r")
+	fout = open(output_file, "r")
 
-    num_wiz_in_input = int(fin.readline().split()[0])
-    # input_wizard_set = set(fin.readline().split())
-    num_constraints = int(fin.readline().split()[0])
+	num_wiz_in_input = int(fin.readline().split()[0])
+	# input_wizard_set = set(fin.readline().split())
+	num_constraints = int(fin.readline().split()[0])
 
-    output_ordering = fout.readline().split()
-    output_ordering_set = set(output_ordering)
-    output_ordering_map = {k: v for v, k in enumerate(output_ordering)}
+	output_ordering = fout.readline().split()
+	output_ordering_set = set(output_ordering)
+	output_ordering_map = {k: v for v, k in enumerate(output_ordering)}
 
 
-    if (len(output_ordering_set) != num_wiz_in_input):
-        return "Input file has unique {} wizards, but output file has {}".format(num_wiz_in_input, len(output_ordering_set))
+	if (len(output_ordering_set) != num_wiz_in_input):
+		return "Input file has unique {} wizards, but output file has {}".format(num_wiz_in_input, len(output_ordering_set))
 
-    if (len(output_ordering_set) != len(output_ordering)):
-        return "The output ordering contains repeated wizards."
+	if (len(output_ordering_set) != len(output_ordering)):
+		return "The output ordering contains repeated wizards."
 
-    # if (input_wizard_set != output_ordering_set):
-    #     return "The output ordering contains wizards that are different from the ones in the input ordering."
+# if (input_wizard_set != output_ordering_set):
+#     return "The output ordering contains wizards that are different from the ones in the input ordering."
 
-    # Counts how many constraints are satisfied.
-    constraints_satisfied = 0
-    constraints_failed = []
-    for i in range(num_constraints):
-        line_num = i + 4
-        constraint = fin.readline().split()
+# Counts how many constraints are satisfied.
 
-        c = constraint # Creating an alias for easy reference
-        m = output_ordering_map # Creating an alias for easy reference
+	constraints_satisfied = 0
+	constraints_failed = []
+	for i in range(num_constraints):
+    
+		line_num = i + 4
+		constraint = fin.readline().split()
 
-        wiz_a = m[c[0]]
-        wiz_b = m[c[1]]
-        wiz_mid = m[c[2]]
+		c = constraint # Creating an alias for easy reference
+		m = output_ordering_map # Creating an alias for easy reference
 
-        if (wiz_a < wiz_mid < wiz_b) or (wiz_b < wiz_mid < wiz_a):
-            constraints_failed.append(c)
-        else:
-            constraints_satisfied += 1
+		wiz_a = m[c[0]]
+		wiz_b = m[c[1]]
+		wiz_mid = m[c[2]]
 
+		if (wiz_a < wiz_mid < wiz_b) or (wiz_b < wiz_mid < wiz_a):
+			
+			constraints_failed.append(c)
+		else:
+			
+			constraints_satisfied += 1
+	if constraints_failed == []:
+		constraints_failed = "Great Success!"
 	return constraints_satisfied, num_constraints, constraints_failed
 
 
@@ -83,7 +88,14 @@ for file in files50:
 	i += 1
 
 
-# for file in filesStaff:
+i = 100
+for file in filesStaff:
+	output_file = output_path + "staff_" + str(i) + ".out"
+	print( "staff_" + str(i))
+	print(processInput(file, output_file))
+	i += 20
+	if i == 420:
+		i = 60
 
 
 

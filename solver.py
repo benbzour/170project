@@ -5,6 +5,7 @@ from itertools import permutations
 import random
 import copy
 import math
+import time
 
 """
 ======================================================================
@@ -74,29 +75,89 @@ def solve(num_wizards, num_constraints, wizards, constraints):
 
 
     def anneal(solution, num_constraints, constraints):
-        old_cost = 0
-        new_cost = 0
-        old_cost = cost(solution,num_constraints,constraints)
+        old_cost = [0,0,0,0]
+        new_cost = [0,0,0,0]
+        new_solution = [0,0,0,0]
+
+
+        old_cost[0] = cost(solution[0],num_constraints,constraints)
+        # old_cost[1] = cost(solution[1],num_constraints,constraints)
+        # old_cost[2] = cost(solution[2],num_constraints,constraints)
+        # old_cost[3] = cost(solution[3],num_constraints,constraints)
         T = 1.0
         T_min = 0.000001
         alpha = 0.98
+        start_time = time.time()
         while T > T_min:
             i = 1
+            
             while i <= 1000:
-                new_solution = neighbors(solution)
-                new_cost = cost(new_solution,num_constraints,constraints)
-                if new_cost == 0:
-                    return new_solution,new_cost
-                ap = acceptance_probability(old_cost, new_cost, T)
-                if ap > random.random():
-                    solution = new_solution
-                    old_cost = new_cost
+                new_solution[0] = neighbors(solution[0])
+                new_cost[0] = cost(new_solution[0],num_constraints,constraints)
+
+                # new_solution[1] = neighbors(solution[1])
+                # new_cost[1] = cost(new_solution[1],num_constraints,constraints)
+
+                # new_solution[2] = neighbors(solution[2])
+                # new_cost[2] = cost(new_solution[2],num_constraints,constraints)
+
+                # new_solution[3] = neighbors(solution[3])
+                # new_cost[3] = cost(new_solution[3],num_constraints,constraints)
+
+                if new_cost[0] == 0:
+                    print("Time It Took To Solve: " + str(time.time() - start_time))
+                    return new_solution[0],new_cost[0]
+                # if new_cost[1] == 0:
+                #     return new_solution[1],new_cost[1]
+                # if new_cost[2] == 0:
+                #     return new_solution[2],new_cost[2]
+                # if new_cost[3] == 0:
+                #     return new_solution[3],new_cost[3]
+
+                ap0 = acceptance_probability(old_cost[0], new_cost[0], T)
+                # ap1 = acceptance_probability(old_cost[1], new_cost[1], T)
+                # ap2 = acceptance_probability(old_cost[2], new_cost[2], T)
+                # ap3 = acceptance_probability(old_cost[3], new_cost[3], T)
+
+                if ap0 > random.random():
+                    solution[0] = new_solution[0]
+                    old_cost[0] = new_cost[0]
+
+                # if ap1 > random.random():
+                #     solution[1] = new_solution[1]
+                #     old_cost[1] = new_cost[1]
+
+                # if ap2 > random.random():
+                #     solution[2] = new_solution[2]
+                #     old_cost[2] = new_cost[2]
+
+                # if ap3 > random.random():
+                #     solution[3] = new_solution[3]
+                #     old_cost[3] = new_cost[3]
+
                 i += 1
             T = T*alpha
-        return solution, old_cost
 
-    s = copy.copy(wizards)
-    random.shuffle(s)
+        best_cost = old_cost[0]
+        best_solution = solution[0]
+        # for j in range(1,4):
+        #     if old_cost[j] < old_cost[j-1]:
+        #         best_cost = old_cost[j]
+        #         best_solution = solution[j]
+        print("Time It Took To Solve: " + str(time.time() - start_time))
+        return best_solution, best_cost
+
+    s = []
+    s.append(copy.copy(wizards))
+    s.append(copy.copy(wizards))
+    s.append(copy.copy(wizards))
+    s.append(copy.copy(wizards))
+    random.shuffle(s[0])
+    random.shuffle(s[1])
+    random.shuffle(s[2])
+    random.shuffle(s[3])
+
+
     ret = anneal(s,num_constraints,constraints)
     
     for i in range(10):
