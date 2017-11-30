@@ -1,5 +1,7 @@
 import argparse
 from itertools import permutations
+# import ortools
+# from ortools.constraint_solver import pywrapcp
 import random
 import copy
 import math
@@ -24,7 +26,6 @@ def solve(num_wizards, num_constraints, wizards, constraints):
     Output:
         An array of wizard names in the ordering your algorithm returns
     """
-
 
     def cost(sol,num_constraints,constraints):
         constraints_satisfied = 0
@@ -64,14 +65,27 @@ def solve(num_wizards, num_constraints, wizards, constraints):
             ans = float('inf')
         return ans
 
+    def naive(solution, num_constraints,constraints):
+        output_ordering_map = {k: v for v, k in enumerate(solution)}
+        ret = []
 
-    def anneal(solution, num_constraints, constraints):
-        old_cost = [0,0,0,0]
-        new_cost = [0,0,0,0]
-        new_solution = [0,0,0,0]
+        for c in constraints:
+            if c[0] not in ret:
+                ret.append(c[0])
+            if c[1] not in ret:
+                ret.append(c[1])
+            if c[2] not in ret:
+                ret.append(c[2])
+
+        return ret
+
+    def anneal(solution,solution2, num_constraints, constraints):
 
 
-        old_cost[0] = cost(solution[0],num_constraints,constraints)
+
+        old_cost = cost(solution,num_constraints,constraints)
+        old_cost2 = cost(solution2,num_constraints,constraints)
+
         T = 1.0
         T_min = 0.000001
         alpha = 0.999
@@ -79,77 +93,66 @@ def solve(num_wizards, num_constraints, wizards, constraints):
         while T > T_min:
             i = 1
             
-            while i <= 1000:
-                new_solution[0] = neighbors(solution[0])
-                new_cost[0] = cost(new_solution[0],num_constraints,constraints)
+            while i <= 300:
+                new_solution = neighbors(solution)
+                new_cost = cost(new_solution,num_constraints,constraints)
 
-                
+                new_solution2 = neighbors(solution2)
+                new_cost2 = cost(new_solution2,num_constraints,constraints)
 
-                if new_cost[0] == 0:
-                    print("Minutes It Took To Solve: " + str((time.time() - start_time) / 60.0))
-                    return new_solution[0],new_cost[0]
-                # if new_cost[1] == 0:
-                #     return new_solution[1],new_cost[1]
-                # if new_cost[2] == 0:
-                #     return new_solution[2],new_cost[2]
-                # if new_cost[3] == 0:
-                #     return new_solution[3],new_cost[3]
 
-                ap0 = acceptance_probability(old_cost[0], new_cost[0], T)
-                # ap1 = acceptance_probability(old_cost[1], new_cost[1], T)
-                # ap2 = acceptance_probability(old_cost[2], new_cost[2], T)
-                # ap3 = acceptance_probability(old_cost[3], new_cost[3], T)
+                if new_cost == 0:
+                    print("Minutes It Took To Solve: " + (str(time.time() - start_time/ 60.0)))
+                    return new_solution,new_cost
+                if new_cost2 == 0:
+                    return new_solution2,new_cost2
+
+
+                ap0 = acceptance_probability(old_cost, new_cost, T)
+                ap2 = acceptance_probability(old_cost2, new_cost2, T)
+
 
                 if ap0 > random.random():
-                    solution[0] = new_solution[0]
-                    old_cost[0] = new_cost[0]
+                    solution = new_solution
+                    old_cost = new_cost
 
-                # if ap1 > random.random():
-                #     solution[1] = new_solution[1]
-                #     old_cost[1] = new_cost[1]
+                if ap2 > random.random():
+                    solution2 = new_solution2
+                    old_cost2 = new_cost2
 
-                # if ap2 > random.random():
-                #     solution[2] = new_solution[2]
-                #     old_cost[2] = new_cost[2]
-
-                # if ap3 > random.random():
-                #     solution[3] = new_solution[3]
-                #     old_cost[3] = new_cost[3]
 
                 i += 1
             T = T*alpha
 
-        best_cost = old_cost[0]
-        best_solution = solution[0]
-        # for j in range(1,4):
-        #     if old_cost[j] < old_cost[j-1]:
-        #         best_cost = old_cost[j]
-        #         best_solution = solution[j]
-        print("Minutes It Took To Solve: " + str((time.time() - start_time )/ 60.0))
-        return best_solution, best_cost
-
-    s = []
-    s.append(copy.copy(wizards))
-    # s.append(copy.copy(wizards))
-    # s.append(copy.copy(wizards))
-    # s.append(copy.copy(wizards))
-    random.shuffle(s[0])
-    # random.shuffle(s[1])
-    # random.shuffle(s[2])
-    # random.shuffle(s[3])
 
 
-    ret = anneal(s,num_constraints,constraints)
-    s[0] = ret[0]
+        print("Minutes It Took To Solve: " + str((time.time() - start_time) /60.0))
+        if old_cost < old_cost2:
+            return solution, old_cost
+        return solution2, old_cost2
+
+    s = copy.copy(wizards)
+    s2 = copy.copy(wizards)
+    
+    sol = naive(s,num_constraints,constraints)
+    if cost(sol,num_constraints,constraints) == 0:
+        print("constraints failed: 0")
+        return sol
+
+
+    random.shuffle(s)
+    random.shuffle(s2)
+    ret = anneal(s,s2,num_constraints,constraints)
+    s = ret[0]
     print("Round: " + str(1))
     print("current ret constraints failed: {0}".format(ret[1]))
     print("current ret solution: {0}".format(ret[0]))
-    for i in range(2,11):
+    for i in range(2,41):
         if ret[1] == 0:
             break
-        random.shuffle(s[0])
-        new_ret = anneal(s,num_constraints,constraints)
-        # s[0] = new_ret[0]
+        random.shuffle(s2)
+        new_ret = anneal(s,s2,num_constraints,constraints)
+        s = new_ret[0]
         print("Round: " +str(i))
         print("current ret constraints failed: {0}".format(new_ret[1]))
         print("current ret solution: {0}".format(new_ret[0]))
