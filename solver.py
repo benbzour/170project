@@ -27,6 +27,7 @@ def solve(num_wizards, num_constraints, wizards, constraints):
         An array of wizard names in the ordering your algorithm returns
     """
 
+    #Cost Function - computes how many constratints failed for a specific solution
     def cost(sol,num_constraints,constraints):
         constraints_satisfied = 0
         constraints_failed = []
@@ -45,6 +46,7 @@ def solve(num_wizards, num_constraints, wizards, constraints):
                 constraints_satisfied += 1
         return num_constraints - constraints_satisfied
 
+    #Helper function that swaps one element from a given solution list
     def neighbors(sol):
         wiz1 = random.randint(0,num_wizards-1)
         wiz2 = random.randint(0,num_wizards-1)
@@ -56,6 +58,9 @@ def solve(num_wizards, num_constraints, wizards, constraints):
         
         return new_sol
 
+    #function that computes the accepted probability
+    #based on the old cost and new cost
+    #and using an exponent function
     def acceptance_probability(old_cost,new_cost,T):
         exponent = (old_cost - new_cost) / T
         
@@ -65,7 +70,7 @@ def solve(num_wizards, num_constraints, wizards, constraints):
             ans = float('inf')
         return ans
 
-
+    #deals with naive base cases, inputs a solution based on the when do names appear in first. 
     def naive(solution, num_constraints,constraints):
         output_ordering_map = {k: v for v, k in enumerate(solution)}
         ret = []
@@ -80,9 +85,8 @@ def solve(num_wizards, num_constraints, wizards, constraints):
 
         return ret
 
-
+    #Simulated annealing function. 
     def anneal(solution,solution2, num_constraints, constraints):
-
 
 
         old_cost = cost(solution,num_constraints,constraints)
@@ -146,12 +150,13 @@ def solve(num_wizards, num_constraints, wizards, constraints):
     random.shuffle(s2)
 
 
-
     ret = anneal(s,s2,num_constraints,constraints)
     s = ret[0]
     print("Round: " + str(1))
     print("current ret constraints failed: {0}".format(ret[1]))
     print("current ret solution: {0}".format(ret[0]))
+
+    #10 calls to the anneal function to converge on the best answer
     for i in range(2,11):
         if ret[1] == 0:
             break
